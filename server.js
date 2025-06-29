@@ -57,10 +57,7 @@ app.post('/send-email', async (req, res) => {
   if (!recaptchaToken?.trim()) return res.status(400).json({ error: 'Recaptcha token is missing.' });
 
   // Email validation
-  const isValidEmail = await validate(email);
-  if (!isValidEmail.valid) {
-    return res.status(400).json({ error: 'Invalid email address.' });
-  }
+  
 
   // Recaptcha validation
   let recaptchaSuccess = false;
