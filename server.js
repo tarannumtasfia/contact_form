@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-// Removed deep-email-validator import
+const { validate } = require('email-validator');
 const path = require('path');
 const nodemailer = require('nodemailer');
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
@@ -16,11 +16,6 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'contactform.html'));
 });
 
-// Simple email validation using regex
-function simpleEmailCheck(email) {
-  return /\S+@\S+\.\S+/.test(email);
-}
-
 // reCAPTCHA verification
 async function verifyRecaptcha(token) {
   const params = new URLSearchParams();
@@ -34,7 +29,7 @@ async function verifyRecaptcha(token) {
   });
 
   const result = await response.json();
-  console.log('Recaptcha verification response:', result); // Debugging
+ 
   return result.success;
 }
 
@@ -54,16 +49,20 @@ const transporter = nodemailer.createTransport({
 app.post('/send-email', async (req, res) => {
   const { name, email, message, recaptchaToken } = req.body;
 
+ 
+
   if (!name?.trim()) return res.status(400).json({ error: 'Name is required.' });
   if (!email?.trim()) return res.status(400).json({ error: 'Email is required.' });
   if (!message?.trim()) return res.status(400).json({ error: 'Message is required.' });
   if (!recaptchaToken?.trim()) return res.status(400).json({ error: 'Recaptcha token is missing.' });
 
-  // Use simple regex validation instead of deep-email-validator
-  if (!simpleEmailCheck(email)) {
+  // Email validation
+  const isValidEmail = await validate(email);
+  if (!isValidEmail.valid) {
     return res.status(400).json({ error: 'Invalid email address.' });
   }
 
+  // Recaptcha validation
   let recaptchaSuccess = false;
   try {
     recaptchaSuccess = await verifyRecaptcha(recaptchaToken);
@@ -71,6 +70,7 @@ app.post('/send-email', async (req, res) => {
     console.error('Error verifying recaptcha:', error);
     return res.status(500).json({ error: 'Recaptcha verification error.' });
   }
+
   if (!recaptchaSuccess) {
     return res.status(400).json({ error: 'Recaptcha verification failed.' });
   }
