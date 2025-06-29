@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const { validate } = require('email-validator');
+const { validate } = require('deep-email-validator');
 const path = require('path');
 const nodemailer = require('nodemailer');
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
@@ -49,7 +49,7 @@ const transporter = nodemailer.createTransport({
 app.post('/send-email', async (req, res) => {
   const { name, email, message, recaptchaToken } = req.body;
 
- 
+
 
   if (!name?.trim()) return res.status(400).json({ error: 'Name is required.' });
   if (!email?.trim()) return res.status(400).json({ error: 'Email is required.' });
