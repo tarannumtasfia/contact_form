@@ -29,9 +29,13 @@ async function verifyRecaptcha(token) {
   });
 
   const result = await response.json();
- 
+
+  // Add this line to log the full response for debugging:
+  console.log('reCAPTCHA verification response:', result);
+
   return result.success;
 }
+
 
 // Nodemailer transporter setup
 const transporter = nodemailer.createTransport({
@@ -93,8 +97,7 @@ app.post('/send-email', async (req, res) => {
     res.status(500).json({ error: 'Failed to send email.' });
   }
 });
-const result = await response.json();
-console.log('reCAPTCHA verification response:', result)
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
