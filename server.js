@@ -73,6 +73,7 @@ app.post('/send-email', async (req, res) => {
   }
 
   if (!recaptchaSuccess) {
+    console.log('reCAPTCHA verification response:', result);
     return res.status(400).json({ error: 'Recaptcha verification failed.' });
   }
 
