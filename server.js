@@ -70,7 +70,9 @@ app.post('/send-email', async (req, res) => {
   } catch (error) {
     return res.status(500).json({ error: 'Recaptcha verification error.' });
   }
-
+app.get('/send-email', (req, res) => {
+  res.status(405).json({ error: 'GET not allowed. Use POST.' });
+});
   const mailOptions = {
     from: `"${name}" <${email}>`,
     to: process.env.EMAIL_USER,
