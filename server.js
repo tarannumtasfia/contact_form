@@ -10,12 +10,12 @@ const PORT = process.env.PORT || 3000;
 app.use(express.static('public'));
 app.use(express.json());
 
-// Serve HTML
+// Serve HTML form
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'contactform.html'));
 });
 
-// Verify reCAPTCHA
+// Verify reCAPTCHA token
 async function verifyRecaptcha(token) {
   const params = new URLSearchParams();
   params.append('secret', process.env.RECAPTCHA_SECRET_KEY);
@@ -32,11 +32,11 @@ async function verifyRecaptcha(token) {
   return result.success;
 }
 
-// Setup transporter
+// Nodemailer transporter setup
 const transporter = nodemailer.createTransport({
-  service: process.env.EMAIL_SERVICE || 'gmail',
-  host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-  port: parseInt(process.env.EMAIL_PORT) || 587,
+  service: process.env.EMAIL_SERVICE,
+  host: process.env.EMAIL_HOST,
+  port: parseInt(process.env.EMAIL_PORT),
   secure: false,
   auth: {
     user: process.env.EMAIL_USER,
@@ -44,50 +44,49 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-// Handle POST form submission
+// Handle form submission
 app.post('/send-email', async (req, res) => {
-  const { name, email, message, recaptchaToken } = req.body;
+  const { name, email, subject, message, recaptchaToken } = req.body;
 
-  // Basic validation
-  if (!name?.trim()) return res.status(400).json({ error: 'Name is required.' });
-  if (!email?.trim()) return res.status(400).json({ error: 'Email is required.' });
-  if (!message?.trim()) return res.status(400).json({ error: 'Message is required.' });
-  if (!recaptchaToken?.trim()) return res.status(400).json({ error: 'Recaptcha token is missing.' });
+  if (!name?.trim() || !email?.trim() || !message?.trim()) {
+    return res.status(400).json({ error: 'All fields are required.' });
+  }
 
-  // Verify reCAPTCHA
+  if (!recaptchaToken?.trim()) {
+    return res.status(400).json({ error: 'Recaptcha token is missing.' });
+  }
+
   try {
-    const recaptchaValid = await verifyRecaptcha(recaptchaToken);
-    if (!recaptchaValid) {
+    const recaptchaSuccess = await verifyRecaptcha(recaptchaToken);
+    if (!recaptchaSuccess) {
       return res.status(400).json({ error: 'Recaptcha verification failed.' });
     }
   } catch (error) {
-    console.error('🚫 reCAPTCHA verification error:', error);
-    return res.status(500).json({ error: 'Failed to verify recaptcha.' });
+    return res.status(500).json({ error: 'Recaptcha verification error.' });
   }
 
-  // Send email
   const mailOptions = {
     from: `"${name}" <${email}>`,
     to: process.env.EMAIL_USER,
-    subject: `New Contact Form Message from ${name}`,
+    subject: subject || `New Contact Form Message from ${name}`,
     html: `
-      <h3>New Message from Contact Form</h3>
+      <h3>You've received a new message:</h3>
       <p><strong>Name:</strong> ${name}</p>
       <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Subject:</strong> ${subject}</p>
       <p><strong>Message:</strong><br>${message}</p>
     `
   };
 
   try {
     await transporter.sendMail(mailOptions);
-    return res.json({ success: true, message: 'Email sent successfully!' });
+    res.json({ success: true, message: 'Email sent successfully!' });
   } catch (error) {
-    console.error('🚫 Email sending error:', error);
-    return res.status(500).json({ error: 'Failed to send email.' });
+    console.error('Email error:', error);
+    res.status(500).json({ error: 'Failed to send email.' });
   }
 });
 
-// Start server
 app.listen(PORT, () => {
-  console.log(`✅ Server running at http://localhost:${PORT}`);
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
