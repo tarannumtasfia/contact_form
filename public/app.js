@@ -29,8 +29,6 @@ form.addEventListener("submit", async (e) => {
 
 
 const result = await res.json();  // <-- Add here
-console.log("Server response:", result);  // <-- Log the response
-
 
   if (res.ok) {
     alert("Message sent successfully!");
