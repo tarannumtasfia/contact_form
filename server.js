@@ -28,12 +28,15 @@ async function verifyRecaptcha(token) {
   });
 
   const result = await response.json();
-  console.log('🔍 reCAPTCHA verification response:', result); // Log full response
+
 
   // Log the hostname for further debugging
  console.log('🔍 Hostname:', result.hostname);
   return result.success;
 }
+
+
+
 // Nodemailer transporter setup
 const transporter = nodemailer.createTransport({
   service: process.env.EMAIL_SERVICE,
