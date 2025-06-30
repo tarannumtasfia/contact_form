@@ -3,18 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Contact Form</title>
+  <title>ContactForm</title>
+  <link rel="stylesheet" href="/style.css"/>
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
-  <form class="contact-form">
-    <input type="text" id="name" placeholder="Full Name" required><br>
-    <input type="email" id="email" placeholder="Email" required><br>
-    <textarea id="message" placeholder="Message" required></textarea><br>
-    <div class="g-recaptcha" data-sitekey="6LesrHErAAAAAM_RkCJZpvpri7eHEfjXBC-zHSs2"></div><br>
-    <button type="submit">Send</button>
-  </form>
-
+  <div class="form-container">
+    <form class="contact-form">
+      <h2>CONTACT</h2>
+      <input type="text" id="name" placeholder="Full Name"/><br/>
+      <input type="email" id="email" placeholder="Email"/><br/>
+      <input type="text" id="subject" placeholder="Subject"/><br/>
+      <textarea id="message" placeholder="Message" rows="5"></textarea><br/>
+      <div class="g-recaptcha" data-sitekey="6LesrHErAAAAAM_RkCJZpvpri7eHEfjXBC-zHSs2"></div><br/>
+      <input type="submit" class="submit" value="Send Message"/>
+    </form>
+  </div>
   <script src="/app.js"></script>
 </body>
 </html>
