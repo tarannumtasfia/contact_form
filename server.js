@@ -70,9 +70,7 @@ app.post('/send-email', async (req, res) => {
   } catch (error) {
     return res.status(500).json({ error: 'Recaptcha verification error.' });
   }
-app.get('/send-email', (req, res) => {
-  res.status(405).json({ error: 'GET not allowed. Use POST.' });
-});
+
   const mailOptions = {
     from: `"${name}" <${email}>`,
     to: process.env.EMAIL_USER,
@@ -94,7 +92,9 @@ app.get('/send-email', (req, res) => {
     res.status(500).json({ error: 'Failed to send email.' });
   }
 });
-
+app.get('/send-email', (req, res) => {
+  res.status(405).json({ error: 'GET not allowed. Use POST.' });
+});
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
