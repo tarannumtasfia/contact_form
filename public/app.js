@@ -21,7 +21,7 @@ form.addEventListener("submit", async (e) => {
 
   
 
-  const res = await fetch("/send-email", {
+  const res = await fetch("/", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(formData),
