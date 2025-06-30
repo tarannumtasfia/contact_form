@@ -8,11 +8,12 @@ contactform.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const recaptchaToken = grecaptcha.getResponse();
+  
   if (!recaptchaToken) {
     alert("Please complete the reCAPTCHA.");
     return;
   }
-
+console.log('reCAPTCHA token:', recaptchaToken);
   const formData = {
     name: name.value.trim(),
     email: email.value.trim(),
