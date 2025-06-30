@@ -14,6 +14,7 @@ form.addEventListener("submit", async (e) => {
   const formData = {
     name: document.getElementById("name").value,
     email: document.getElementById("email").value,
+    subject: document.getElementById("subject").value,
     message: document.getElementById("message").value,
     recaptchaToken,
   };
@@ -29,7 +30,7 @@ form.addEventListener("submit", async (e) => {
 
 const result = await res.json();  // <-- Add here
 console.log("Server response:", result);  // <-- Log the response
-alert(result.error || "An error occurred");  // <-- Show alert with error or fallback message
+
 
   if (res.ok) {
     alert("Message sent successfully!");
