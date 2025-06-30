@@ -19,7 +19,7 @@ form.addEventListener("submit", async (e) => {
     recaptchaToken,
   };
 
-  console.log("Sending form data:", formData);
+  
 
   const res = await fetch("/send-email", {
     method: "POST",
