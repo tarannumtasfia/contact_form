@@ -21,20 +21,25 @@ form.addEventListener("submit", async (e) => {
 
   
 
-  const res = await fetch("/send-email", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(formData),
-  });
-
-
-const result = await res.json();  // <-- Add here
-
-  if (res.ok) {
-    alert("Message sent successfully!");
-    form.reset();
-    grecaptcha.reset();
-  } else {
-    alert(result.error || "Something went wrong.");
-  }
+const res = await fetch("/send-email", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(formData),
 });
+
+let result;
+try {
+  result = await res.json();
+} catch (e) {
+  // If response is not JSON, show a generic error
+  alert("Server error: response was not JSON.");
+  return;
+}
+
+if (res.ok) {
+  alert("Message sent successfully!");
+  form.reset();
+  grecaptcha.reset();
+} else {
+  alert(result.error || "Something went wrong.");
+}
