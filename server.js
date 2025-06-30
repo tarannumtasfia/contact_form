@@ -47,6 +47,7 @@ const transporter = nodemailer.createTransport({
 // Handle form submission
 app.post('/send-email', async (req, res) => {
   const { name, email, subject, message, recaptchaToken } = req.body;
+   console.log('Received recaptchaToken:', recaptchaToken);
 
   if (!name?.trim() || !email?.trim() || !message?.trim()) {
     return res.status(400).json({ error: 'All fields are required.' });
