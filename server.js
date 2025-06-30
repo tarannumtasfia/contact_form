@@ -28,7 +28,8 @@ async function verifyRecaptcha(token) {
   });
 
   const result = await response.json();
-
+  console.log("🔍 Full verification result:", result);
+console.log("🔍 Request params:", params.toString());
 
   // Log the hostname for further debugging
  console.log('🔍 Hostname:', result.hostname);
