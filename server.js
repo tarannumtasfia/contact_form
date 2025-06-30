@@ -31,10 +31,7 @@ async function verifyRecaptcha(token) {
   console.log('🔍 reCAPTCHA verification response:', result); // Log full response
 
   // Log the hostname for further debugging
-  if (result.hostname) {
-    console.log('reCAPTCHA verified for hostname:', result.hostname);
-  }
-
+ console.log('🔍 Hostname:', result.hostname);
   return result.success;
 }
 // Nodemailer transporter setup
