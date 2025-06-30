@@ -26,8 +26,10 @@ form.addEventListener("submit", async (e) => {
     body: JSON.stringify(formData),
   });
 
-  const result = await res.json();
-  console.log("Server response:", result);
+
+const result = await response.json();  // <-- Add here
+console.log("Server response:", result);  // <-- Log the response
+alert(result.error || "An error occurred");  // <-- Show alert with error or fallback message
 
   if (res.ok) {
     alert("Message sent successfully!");
