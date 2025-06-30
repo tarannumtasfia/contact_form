@@ -27,7 +27,7 @@ form.addEventListener("submit", async (e) => {
   });
 
 
-const result = await response.json();  // <-- Add here
+const result = await res.json();  // <-- Add here
 console.log("Server response:", result);  // <-- Log the response
 alert(result.error || "An error occurred");  // <-- Show alert with error or fallback message
 
