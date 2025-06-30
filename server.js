@@ -50,7 +50,7 @@ const transporter = nodemailer.createTransport({
 });
 
 // Handle form submission
-app.post('/', async (req, res) => {
+app.post('/send-email', async (req, res) => {
   const { name, email, subject, message, recaptchaToken } = req.body;
    console.log('Received recaptchaToken:', recaptchaToken);
 
