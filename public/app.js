@@ -43,3 +43,4 @@ if (res.ok) {
 } else {
   alert(result.error || "Something went wrong.");
 }
+});
