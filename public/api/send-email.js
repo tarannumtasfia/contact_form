@@ -1,58 +1,83 @@
-// contact_form_updated/api/send-email.js
-
 import nodemailer from 'nodemailer';
+import fetch from 'node-fetch';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    res.status(405).json({ error: 'Method not allowed, use POST.' });
+    return;
   }
 
   const { name, email, subject, message, recaptchaToken } = req.body;
 
-  // Validate
-  if (!name?.trim() || !email?.trim() || !message?.trim() || !recaptchaToken?.trim()) {
-    return res.status(400).json({ error: 'Missing required fields.' });
+  if (!name?.trim() || !email?.trim() || !message?.trim()) {
+    res.status(400).json({ error: 'All fields are required.' });
+    return;
+  }
+
+  if (!recaptchaToken?.trim()) {
+    res.status(400).json({ error: 'Recaptcha token is missing.' });
+    return;
   }
 
   // Verify reCAPTCHA
-  const params = new URLSearchParams();
-  params.append('secret', process.env.RECAPTCHA_SECRET_KEY);
-  params.append('response', recaptchaToken);
+  async function verifyRecaptcha(token) {
+    const params = new URLSearchParams();
+    params.append('secret', process.env.RECAPTCHA_SECRET_KEY);
+    params.append('response', token);
 
-  const recaptchaResponse = await fetch('https://www.google.com/recaptcha/api/siteverify', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: params.toString()
-  });
+    const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: params.toString(),
+    });
 
-  const result = await recaptchaResponse.json();
-  if (!result.success) {
-    return res.status(400).json({ error: 'Recaptcha failed.' });
+    const result = await response.json();
+    return result.success;
   }
 
-  // Email
+  try {
+    const recaptchaSuccess = await verifyRecaptcha(recaptchaToken);
+    if (!recaptchaSuccess) {
+      res.status(400).json({ error: 'Recaptcha verification failed.' });
+      return;
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Recaptcha verification error.' });
+    return;
+  }
+
+  // Setup nodemailer transporter
   const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST || "smtp.gmail.com",
+    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
     port: Number(process.env.EMAIL_PORT) || 587,
     secure: false,
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
     },
+    tls: {
+      rejectUnauthorized: false,
+    },
   });
 
   const mailOptions = {
     from: `"${name}" <${email}>`,
     to: process.env.EMAIL_USER,
-    subject: subject || `New Contact Form Submission`,
-    html: `<p>${message}</p>`
+    subject: subject || `New Contact Form Message from ${name}`,
+    html: `
+      <h3>You've received a new message:</h3>
+      <p><strong>Name:</strong> ${name}</p>
+      <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Subject:</strong> ${subject}</p>
+      <p><strong>Message:</strong><br>${message}</p>
+    `,
   };
 
   try {
     await transporter.sendMail(mailOptions);
-    res.status(200).json({ success: true });
-  } catch (err) {
-    console.error('Email failed:', err);
-    res.status(500).json({ error: 'Email sending failed.' });
+    res.status(200).json({ success: true, message: 'Email sent successfully!' });
+  } catch (error) {
+    console.error('Email error:', error);
+    res.status(500).json({ error: 'Failed to send email.' });
   }
 }
