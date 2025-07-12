@@ -44,6 +44,6 @@ if (res.ok) {
   form.reset();
   grecaptcha.reset();
 } else {
-  alert(result.error || "Something went wrong.");
+  alert(result.error ? JSON.stringify(result.error) : "Something went wrong.");
 }
 });
