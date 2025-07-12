@@ -12,38 +12,45 @@ form.addEventListener("submit", async (e) => {
   }
 
   const formData = {
-    name: document.getElementById("name").value,
-    email: document.getElementById("email").value,
-    subject: document.getElementById("subject").value,
-    message: document.getElementById("message").value,
+    name: document.getElementById("name").value.trim(),
+    email: document.getElementById("email").value.trim(),
+    subject: document.getElementById("subject").value.trim(),
+    message: document.getElementById("message").value.trim(),
     recaptchaToken,
   };
 
-  
+  try {
+    const res = await fetch("/api/send-email", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
 
-const res = await fetch("/api/send-email", {
-  method: "POST",
-  headers: {
-    "Accept": "application/json",
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify(formData),
-});
+    let result;
+    try {
+      result = await res.json();
+    } catch {
+      alert("Server error: response was not JSON.");
+      return;
+    }
 
-let result;
-try {
-  result = await res.json();
-} catch (e) {
-  // If response is not JSON, show a generic error
-  alert("Server error: response was not JSON.");
-  return;
-}
-
-if (res.ok) {
-  alert("Message sent successfully!");
-  form.reset();
-  grecaptcha.reset();
-} else {
-  alert(result.error ? JSON.stringify(result.error) : "Something went wrong.");
-}
+    if (res.ok) {
+      alert("Message sent successfully!");
+      form.reset();
+      grecaptcha.reset();
+    } else {
+      console.error("Error from server:", result.error);
+      const errorMessage =
+        typeof result.error === "string"
+          ? result.error
+          : JSON.stringify(result.error, null, 2) || "Something went wrong.";
+      alert("Error: " + errorMessage);
+    }
+  } catch (error) {
+    console.error("Fetch error:", error);
+    alert("Failed to send request. Please try again later.");
+  }
 });
