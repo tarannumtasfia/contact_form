@@ -74,8 +74,24 @@ textarea:focus {
   opacity: 0.95;
 }
 
-.g-recaptcha {
-  margin: 20px 0;
+/* Wrapper to scale reCAPTCHA */
+.recaptcha-wrapper {
   display: flex;
   justify-content: center;
+  transform: scale(1);
+  transform-origin: center;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Scale down for smaller screens */
+@media (max-width: 600px) {
+  .recaptcha-wrapper {
+    transform: scale(0.85);
+  }
+}
+
+@media (max-width: 400px) {
+  .recaptcha-wrapper {
+    transform: scale(0.75);
+  }
 }
