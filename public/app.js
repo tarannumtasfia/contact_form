@@ -3,13 +3,13 @@ const form = document.querySelector(".contact-form");
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const recaptchaToken = grecaptcha.getResponse();
-  console.log("reCAPTCHA token:", recaptchaToken);
+  // const recaptchaToken = grecaptcha.getResponse();
+  // console.log("reCAPTCHA token:", recaptchaToken);
 
-  if (!recaptchaToken) {
-    alert("Please complete the reCAPTCHA.");
-    return;
-  }
+  // if (!recaptchaToken) {
+  //   alert("Please complete the reCAPTCHA.");
+  //   return;
+  // }
 
   const formData = {
     name: document.getElementById("name").value.trim(),
