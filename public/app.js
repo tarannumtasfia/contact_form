@@ -16,7 +16,7 @@ form.addEventListener("submit", async (e) => {
     email: document.getElementById("email").value.trim(),
     subject: document.getElementById("subject").value.trim(),
     message: document.getElementById("message").value.trim(),
-    recaptchaToken,
+    // recaptchaToken,
   };
 
   try {
@@ -40,7 +40,7 @@ form.addEventListener("submit", async (e) => {
     if (res.ok) {
       alert("Message sent successfully!");
       form.reset();
-      grecaptcha.reset();
+      // grecaptcha.reset();
     } else {
       console.error("Error from server:", result.error);
       const errorMessage =
