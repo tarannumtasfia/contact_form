@@ -1,16 +1,18 @@
-import nodemailer from 'nodemailer';
-import fetch from 'node-fetch';
+import nodemailer from "nodemailer";
+import fetch from "node-fetch";
 
 export default async function handler(req, res) {
- 
-
   const { name, email, subject, message, recaptchaToken } = req.body;
 
   if (!name?.trim() || !email?.trim() || !message?.trim()) {
-    res.status(400).json({ error: 'All fields are required.' });
+    res.status(400).json({ error: "All fields are required." });
     return;
   }
-
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    res.status(400).json({ error: "Invalid email address format." });
+    return;
+  }
   // if (!recaptchaToken?.trim()) {
   //   res.status(400).json({ error: 'Recaptcha token is missing.' });
   //   return;
@@ -45,7 +47,7 @@ export default async function handler(req, res) {
 
   // Setup nodemailer transporter
   const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+    host: process.env.EMAIL_HOST || "smtp.gmail.com",
     port: Number(process.env.EMAIL_PORT) || 587,
     secure: false,
     auth: {
@@ -72,9 +74,11 @@ export default async function handler(req, res) {
 
   try {
     await transporter.sendMail(mailOptions);
-    res.status(200).json({ success: true, message: 'Email sent successfully!' });
+    res
+      .status(200)
+      .json({ success: true, message: "Email sent successfully!" });
   } catch (error) {
-    console.error('Email error:', error);
-    res.status(500).json({ error: 'Failed to send email.' });
+    console.error("Email error:", error);
+    res.status(500).json({ error: "Failed to send email." });
   }
 }
